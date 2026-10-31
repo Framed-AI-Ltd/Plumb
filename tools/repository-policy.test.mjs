@@ -13,8 +13,8 @@ test('each configured Dependabot ecosystem retains at least seven days of cooldo
   }
 });
 
-test('solo integration branches require PRs and resolved threads without self-approval deadlocks', () => {
-  for (const branch of ['main', 'develop']) {
+test('solo integration and release branches require PRs and resolved threads without self-approval deadlocks', () => {
+  for (const branch of ['main', 'develop', 'release/**', 'release/0.0.1']) {
     const policy = pullRequestParameters(branch);
     assert.equal(policy.required_approving_review_count, 0);
     assert.equal(policy.require_code_owner_review, false);
@@ -24,8 +24,8 @@ test('solo integration branches require PRs and resolved threads without self-ap
   }
 });
 
-test('release and hotfix approval requirements remain intact', () => {
-  for (const branch of ['release/**', 'hotfix/**']) {
+test('hotfix approval requirements remain intact', () => {
+  for (const branch of ['hotfix/**', 'hotfix/urgent', 'feature/example']) {
     const policy = pullRequestParameters(branch);
     assert.equal(policy.required_approving_review_count, 1);
     assert.equal(policy.require_code_owner_review, true);
