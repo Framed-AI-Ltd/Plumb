@@ -3,6 +3,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      validate_only:
+        description: Build and validate the Pages artifact without deployment
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -29,6 +34,7 @@ jobs:
         with:
           path: storybook-static
   deploy:
+    if: github.ref == 'refs/heads/main' && (github.event_name != 'workflow_dispatch' || !inputs.validate_only)
     needs: build
     runs-on: ubuntu-latest
     environment:

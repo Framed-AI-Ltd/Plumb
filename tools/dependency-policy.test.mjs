@@ -31,3 +31,10 @@ test('action migrations preserve immutable pins, disabled credential persistence
   assert(workflowProblems(safe.replace('persist-credentials: false', 'persist-credentials: true')).some(p => p.includes('credentials')));
   assert(workflowProblems(safe.replace('persist-credentials: false', 'allow-unsafe-pr-checkout: true')).some(p => p.includes('safety')));
 });
+
+test('Pages action can be validated without deploying, and deployment stays on main', () => {
+  const source = readFileSync(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8');
+  assert.match(source, /validate_only:\n\s+description:[^\n]+\n\s+type: boolean\n\s+default: false/);
+  const deploy = source.split('\n  deploy:')[1];
+  assert.match(deploy, /if: github.ref == 'refs\/heads\/main' && \(github.event_name != 'workflow_dispatch' \|\| !inputs.validate_only\)/);
+});
