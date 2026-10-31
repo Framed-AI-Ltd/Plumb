@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { classifyChanges, detectImpact, eventRange } from './ci-impact.mjs';
 import { selectStories } from './ci-stories.mjs';
 
@@ -44,4 +45,15 @@ test('story selection uses actual index ownership and includes new stories autom
   assert.equal(selectStories({ entries: { ...index.entries, c: { type: 'story', id: 'new--example', importPath: './stories/New.stories.tsx' } } }, 'all', []).length, 3);
   assert.throws(() => selectStories({ entries: {} }, 'all', []), /must contain stories/);
   assert.throws(() => selectStories({ entries: { bad: { type: 'story', id: 'unsafe\nENV=value' } } }, 'all', []), /Invalid story ID/);
+});
+
+test('only the historical reference capture opts out of current style regressions', () => {
+  const workflow = readFileSync(new URL('../.github/workflows/visual-diff.yml', import.meta.url), 'utf8');
+  const reference = workflow.split('name: Capture full reference matrix')[1].split('      - name:')[0];
+  const proposed = workflow.split('name: Capture and audit the full proposed matrix')[1].split('      - name:')[0];
+  assert.match(reference, /VISUAL_REFERENCE=1 VISUAL_CAPTURE_ONLY=1 pnpm test:visual/);
+  assert.doesNotMatch(proposed, /VISUAL_REFERENCE/);
+  assert.match(proposed, /VISUAL_CAPTURE_ONLY=1 VISUAL_A11Y=1 pnpm test:visual/);
+  const pr = readFileSync(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
+  assert.doesNotMatch(pr, /VISUAL_REFERENCE/);
 });

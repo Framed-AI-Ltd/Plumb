@@ -45,7 +45,7 @@ jobs:
       - name: Capture full reference matrix in the same environment
         run: |
           cp -R base-source/storybook-static storybook-static
-          VISUAL_CAPTURE_ONLY=1 pnpm test:visual
+          VISUAL_REFERENCE=1 VISUAL_CAPTURE_ONLY=1 pnpm test:visual
           mv test-results visual-base
       - name: Capture and audit the full proposed matrix
         run: |

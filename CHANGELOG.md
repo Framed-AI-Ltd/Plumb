@@ -15,7 +15,7 @@ All notable changes to `@framed-ai/plumb` follow [Semantic Versioning](https://s
 
 ### Fixed
 
-- Consolidate PR browser, accessibility and screenshot evidence with conservative story selection; keep pixel differences advisory and retain full scheduled/manual visual reviews.
+- Consolidate PR browser, accessibility and screenshot evidence with conservative story selection; keep pixel differences advisory and retain full scheduled/manual visual reviews without imposing proposed-build style assertions on historical reference captures.
 - Make disabled button colors, calendar icon sizing, confirmed overdue event colors and estimate-grid header spacing independent of compiled CSS order, preserving the approved visual baselines.
 - Add Dependabot cooldowns and enable the approved solo-maintainer review policy for main/develop/release branches while retaining CI, signed commits and merge queues.
 - Correct the npm scope to `@framed-ai/plumb`, including release guards, bootstrap archive names, generated metadata and consumer examples.
