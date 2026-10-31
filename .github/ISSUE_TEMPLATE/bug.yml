@@ -40,7 +40,7 @@ body:
     id: env
     attributes:
       label: Version, browser, and assistive technology
-      placeholder: "@framed/plumb 0.0.1 · Firefox 140 · NVDA 2026.1"
+      placeholder: "@framed-ai/plumb 0.0.1 · Firefox 140 · NVDA 2026.1"
   - type: checkboxes
     id: private
     attributes:

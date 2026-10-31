@@ -6,6 +6,7 @@ const pkg = JSON.parse(await readFile("package.json", "utf8"));
 const changelog = await readFile("CHANGELOG.md", "utf8");
 const license = await readFile("LICENSE", "utf8").catch(() => "");
 const problems = [];
+if (pkg.name !== "@framed-ai/plumb") problems.push("package.json must publish as @framed-ai/plumb.");
 if (!pkg.license || pkg.license === "UNLICENSED") problems.push("package.json must declare the chosen license (docs/LICENSING.md).");
 if (!license.trim()) problems.push("LICENSE is missing or unreadable; include the full chosen license text.");
 else if (pkg.license === "PolyForm-Noncommercial-1.0.0" && !/^# PolyForm Noncommercial License 1\.0\.0\r?\n/.test(license)) problems.push("LICENSE title does not match the PolyForm Noncommercial 1.0.0 package metadata.");

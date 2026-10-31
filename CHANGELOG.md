@@ -1,8 +1,12 @@
 # Changelog
 
-All notable changes to `@framed/plumb` follow [Semantic Versioning](https://semver.org/). Before 1.0, minor releases may change the API.
+All notable changes to `@framed-ai/plumb` follow [Semantic Versioning](https://semver.org/). Before 1.0, minor releases may change the API.
 
 ## [Unreleased]
+
+### Fixed
+
+- Correct the npm scope to `@framed-ai/plumb`, including release guards, bootstrap archive names, generated metadata and consumer examples.
 
 ## [0.0.1] - 2026-10-31
 
