@@ -1,19 +1,36 @@
-name: PR visual comparison
+name: Full visual review
 on:
-  pull_request:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+    inputs:
+      base_ref:
+        description: Reference branch or commit
+        type: string
+        default: main
+        required: true
+      head_ref:
+        description: Proposed branch or commit (use main for a release check)
+        type: string
+        default: develop
+        required: true
 permissions:
   contents: read
+concurrency:
+  group: full-visual-review
+  cancel-in-progress: false
 jobs:
   compare:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.head_ref || 'develop' }}
           persist-credentials: false
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ github.event.pull_request.base.sha }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.base_ref || 'main' }}
           path: base-source
           persist-credentials: false
       - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
@@ -25,25 +42,33 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm install --frozen-lockfile && pnpm build:storybook
         working-directory: base-source
-      - name: Capture base using the same harness
+      - name: Capture full reference matrix in the same environment
         run: |
           cp -R base-source/storybook-static storybook-static
           VISUAL_CAPTURE_ONLY=1 pnpm test:visual
           mv test-results visual-base
-      - name: Capture proposed head
+      - name: Capture and audit the full proposed matrix
         run: |
           pnpm build:storybook
-          VISUAL_CAPTURE_ONLY=1 pnpm test:visual
+          VISUAL_CAPTURE_ONLY=1 VISUAL_A11Y=1 pnpm test:visual
           mv test-results visual-head
-      - name: Generate comparison evidence
+      - name: Full responsive template review
+        run: |
+          python3 -m http.server 6007 --directory storybook-static --bind 127.0.0.1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          sleep 2
+          pnpm review:responsive --url http://127.0.0.1:6007
+      - name: Generate review evidence
         run: node tools/visual-diff.mjs visual-base visual-head
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
-          name: pr-visual-comparison
+          name: full-visual-review
           path: |
             visual-diff/
             visual-base/
             visual-head/
+            review-responsive/
             playwright-report/
           retention-days: 14

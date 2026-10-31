@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 // Dynamic inventory catches new stories. Capture is evidence, never baseline approval.
 test('responsive story rendering and visual evidence', async ({ page, request }, info) => {
   test.setTimeout(30 * 60 * 1000);
@@ -17,10 +18,20 @@ test('responsive story rendering and visual evidence', async ({ page, request },
   const theme = info.project.name.endsWith('dark') ? 'dark' : 'light';
   for (const story of stories.filter(s => s.type === 'story' && (!selected || selected.includes(s.id)))) {
     await page.clock.setFixedTime(new Date('2026-01-15T12:00:00Z'));
-    await page.goto(`/iframe.html?id=${encodeURIComponent(story.id)}&viewMode=story&globals=theme:${theme};brand:denim;neutral:cream`);
+    // The harness owns axe runs; disable only Storybook's duplicate background audit.
+    await page.goto(`/iframe.html?id=${encodeURIComponent(story.id)}&viewMode=story&globals=theme:${theme};brand:denim;neutral:cream;a11y.manual:!true`);
     await page.evaluate(() => document.fonts.ready);
     await expect(page.locator('#storybook-root')).not.toBeEmpty();
     await expect(page.locator('body')).not.toHaveClass(/sb-show-errordisplay|sb-show-nopreview/);
+    if (process.env.VISUAL_A11Y === '1') {
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+      expect(overflow, `${story.id}: document must not scroll sideways`).toBeLessThanOrEqual(1);
+      const width = info.project.use.viewport?.width;
+      if (width === 1440 || /--(field-capture|customer-portal|request-and-bids)$/.test(story.id)) {
+        const audit = await new AxeBuilder({ page }).include('#storybook-root').analyze();
+        expect(audit.violations.map(v => ({ id: v.id, impact: v.impact, nodes: v.nodes.length })), `${story.id}: accessibility`).toEqual([]);
+      }
+    }
     if (story.id === 'framed--estimate-grid') {
       const spacing = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--space-3').trim());
       await expect(page.locator('.plumb-line-grid [role="columnheader"]').first()).toHaveCSS('padding-top', spacing);
