@@ -1,0 +1,67 @@
+name: Publish npm
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+concurrency:
+  group: npm-publication
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.repository == 'Framed-AI-Ltd/Plumb'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          package-manager-cache: false
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+      - run: npm install --global npm@11.11.0
+      - run: node tools/release-source.mjs
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm package:smoke
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:browser && pnpm test:calendar
+      - run: pnpm build
+      - name: Pack verified source without publishing
+        run: pnpm pack --pack-destination release
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-package
+          path: release/*.tgz
+          if-no-files-found: error
+          retention-days: 1
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      # No checkout, dependency installation or project lifecycle scripts in this job.
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - run: npm install --global npm@11.11.0 --ignore-scripts
+      - name: Download this run's verified tarball
+        run: gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name release-package --dir release
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Trusted publisher (no npm token)
+        shell: bash
+        run: |
+          archives=(release/*.tgz)
+          test "${#archives[@]}" -eq 1
+          test -f "${archives[0]}"
+          npm publish "${archives[0]}" --ignore-scripts --access public --provenance

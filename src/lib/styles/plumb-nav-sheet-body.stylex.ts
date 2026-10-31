@@ -1,0 +1,8 @@
+import { tokens } from "../theme/tokens.stylex";
+import * as stylex from "@stylexjs/stylex";
+export const styles = stylex.create({
+    "root": {
+        "gap": tokens.space2,
+        "flex": "1"
+    }
+});

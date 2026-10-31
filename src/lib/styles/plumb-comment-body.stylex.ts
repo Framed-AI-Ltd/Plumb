@@ -1,0 +1,11 @@
+import { tokens } from "../theme/tokens.stylex";
+import * as stylex from "@stylexjs/stylex";
+export const styles = stylex.create({
+    "root": {
+        "flex": "1",
+        "minInlineSize": 0,
+        "display": "flex",
+        "flexDirection": "column",
+        "gap": tokens.space2
+    }
+});

@@ -1,0 +1,107 @@
+name: Codex review
+on:
+  # Only protected Gitflow integration branches may supply this privileged workflow.
+  # zizmor: ignore[dangerous-triggers] Member gate; trusted default-branch helpers; PR data never executed.
+  pull_request_target:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  authorize:
+    if: >-
+      (github.event_name == 'pull_request_target' && !github.event.pull_request.draft && github.event.pull_request.author_association == 'MEMBER') ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request && github.event.comment.author_association == 'MEMBER' && github.event.comment.body == '/codex-review')
+    runs-on: ubuntu-latest
+    outputs:
+      allowed: ${{ steps.gate.outputs.allowed }}
+      number: ${{ steps.gate.outputs.number }}
+      head: ${{ steps.gate.outputs.head }}
+      base: ${{ steps.gate.outputs.base }}
+      actor: ${{ steps.gate.outputs.actor }}
+      trusted: ${{ steps.gate.outputs.trusted }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+          sparse-checkout: |
+            tools/codex-review-policy.mjs
+            tools/codex-review-api.mjs
+          sparse-checkout-cone-mode: false
+      - id: gate
+        name: Authorize the author or manual reviewer
+        run: node tools/codex-review-policy.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+  review:
+    needs: authorize
+    if: needs.authorize.outputs.allowed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    concurrency:
+      group: codex-review-${{ needs.authorize.outputs.number }}
+      cancel-in-progress: true
+    outputs:
+      result: ${{ steps.codex.outputs.final-message }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.authorize.outputs.trusted }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Fetch immutable PR objects without checking out PR files
+        run: node tools/codex-review-prepare.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REVIEW_PR: ${{ needs.authorize.outputs.number }}
+          REVIEW_HEAD: ${{ needs.authorize.outputs.head }}
+          REVIEW_BASE: ${{ needs.authorize.outputs.base }}
+      - id: codex
+        name: Review bugs, security, performance and maintainability
+        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          codex-version: 0.165.0
+          model: ${{ vars.OPENAI_REVIEW_MODEL }}
+          effort: high
+          permission-profile: ':read-only'
+          safety-strategy: drop-sudo
+          allow-users: ${{ needs.authorize.outputs.actor }}
+          prompt-file: .github/prompts/codex-review.md
+          output-schema-file: .github/prompts/codex-review.schema.json
+          output-file: review-ai/review.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: codex-review-${{ needs.authorize.outputs.head }}
+          path: |
+            review-ai/
+            review-input/context.json
+          retention-days: 14
+  report:
+    needs: [authorize, review]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.authorize.outputs.trusted }}
+          persist-credentials: false
+          sparse-checkout: |
+            tools/codex-review-api.mjs
+            tools/codex-review-report.mjs
+          sparse-checkout-cone-mode: false
+      - name: Publish findings for the reviewed commit
+        run: node tools/codex-review-report.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REVIEW_PR: ${{ needs.authorize.outputs.number }}
+          REVIEW_HEAD: ${{ needs.authorize.outputs.head }}
+          REVIEW_BASE: ${{ needs.authorize.outputs.base }}
+          REVIEW_RESULT: ${{ needs.review.outputs.result }}

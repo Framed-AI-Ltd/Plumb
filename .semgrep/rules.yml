@@ -1,0 +1,44 @@
+rules:
+  - id: plumb-review-untrusted-checkout
+    languages: [yaml]
+    severity: ERROR
+    message: Privileged AI review helpers must use the protected default-branch SHA, never a PR base or head.
+    paths:
+      include:
+        - .github/workflows/ai-review.yml
+        - .semgrep/tests/rules.yaml
+    pattern-either:
+      - pattern: 'ref: "${{ github.event.pull_request.base.sha }}"'
+      - pattern: 'ref: "${{ github.event.pull_request.head.sha }}"'
+      - pattern: 'ref: "${{ github.head_ref }}"'
+      - pattern: 'ref: "${{ github.sha }}"'
+      - pattern: 'ref: "${{ github.ref }}"'
+  - id: plumb-money-unknown-is-not-zero
+    languages: [typescript]
+    severity: ERROR
+    message: Preserve unknown money as null; do not silently coerce it to zero.
+    pattern-either:
+      - pattern: <Money amount={$VALUE ?? 0} ... />
+      - pattern: <Money amount={$VALUE || 0} ... />
+  - id: plumb-customer-private-field
+    languages: [typescript]
+    severity: ERROR
+    message: Customer payloads must explicitly omit internal rates and contractor notes.
+    patterns:
+      - pattern-inside: |
+          function toCustomerPayload(...) { ... }
+      - pattern-either:
+          - pattern: 'return { ..., internalRate: $VALUE, ... };'
+          - pattern: 'return { ..., contractorNotes: $VALUE, ... };'
+  - id: plumb-stylex-raw-brand-color
+    languages: [typescript]
+    severity: ERROR
+    message: Use semantic tokens inside StyleX; preserve the approved palette source.
+    patterns:
+      - pattern-inside: stylex.create(...)
+      - pattern-regex: '(?i)\b(?:color|backgroundColor|borderColor)\s*:\s*["\x27]#[0-9a-f]{3,8}["\x27]'
+  - id: plumb-client-secret-env
+    languages: [typescript]
+    severity: ERROR
+    message: Secret values must never be exposed through client Vite environment names.
+    pattern-regex: 'import\.meta\.env\.VITE_(?:AWS_SECRET_ACCESS_KEY|DATABASE_PASSWORD|PRIVATE_KEY|API_SECRET)\b'

@@ -1,0 +1,29 @@
+jobs:
+  unsafe_base:
+    with:
+      # ruleid: plumb-review-untrusted-checkout
+      ref: ${{ github.event.pull_request.base.sha }}
+  unsafe_head:
+    with:
+      # ruleid: plumb-review-untrusted-checkout
+      ref: ${{ github.event.pull_request.head.sha }}
+  unsafe_branch:
+    with:
+      # ruleid: plumb-review-untrusted-checkout
+      ref: ${{ github.head_ref }}
+  unsafe_event_sha:
+    with:
+      # ruleid: plumb-review-untrusted-checkout
+      ref: ${{ github.sha }}
+  unsafe_event_ref:
+    with:
+      # ruleid: plumb-review-untrusted-checkout
+      ref: ${{ github.ref }}
+  protected_default:
+    with:
+      # ok: plumb-review-untrusted-checkout
+      ref: ${{ github.event.repository.default_branch }}
+  pinned_trusted:
+    with:
+      # ok: plumb-review-untrusted-checkout
+      ref: ${{ needs.authorize.outputs.trusted }}

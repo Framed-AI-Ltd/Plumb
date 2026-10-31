@@ -1,0 +1,30 @@
+name: Component request
+description: Propose a new component, or a new variant or prop for an existing one.
+labels: [component-request]
+body:
+  - type: markdown
+    attributes:
+      value: Check docs/COMPONENTS.md and the Layouts page templates first; most needs can be composed from existing parts.
+  - type: textarea
+    id: need
+    attributes:
+      label: What do people need to do?
+      description: Describe the job, not the widget.
+    validations:
+      required: true
+  - type: textarea
+    id: screens
+    attributes:
+      label: Where is it needed?
+      description: A new component needs at least two screens or flows. Name the features (F-… ids) they serve.
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What did you try with existing components?
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API and states
+      description: Props, and the empty, loading, error, long-text, and narrow-screen states. Link references (React Aria, WAI-ARIA APG, Ant, Apple HIG) if useful.

@@ -1,0 +1,140 @@
+{
+  "name": "@framed/plumb",
+  "version": "0.0.1",
+  "description": "Plumb: the Framed design system. Accessible React components (React Aria) for contractor estimating, proposals, and property records.",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Framed-AI-Ltd/Plumb.git"
+  },
+  "homepage": "https://framed-ai-ltd.github.io/Plumb/",
+  "bugs": {
+    "url": "https://github.com/Framed-AI-Ltd/Plumb/issues"
+  },
+  "keywords": [
+    "design-system",
+    "react",
+    "react-aria",
+    "components",
+    "accessibility",
+    "construction",
+    "estimating"
+  ],
+  "packageManager": "pnpm@12.14.0",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./fonts.css": "./dist/fonts.css",
+    "./i18n/*.json": "./dist/i18n/*.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "docs/COMPONENTS.md",
+    "docs/LAYOUTS.md",
+    "docs/PRINCIPLES.md",
+    "docs/ICONS.md",
+    "docs/catalog.json",
+    "CHANGELOG.md",
+    "LICENSE",
+    "docs/LICENSING.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "tokens": "node tools/build-tokens.mjs",
+    "dev": "pnpm tokens && storybook dev -p 6007 --host 127.0.0.1 --no-open --disable-telemetry",
+    "build": "pnpm tokens && vite build -c vite.lib.config.ts && tsc -p tsconfig.build.json && node tools/build-assets.mjs",
+    "build:storybook": "pnpm tokens && storybook build --disable-telemetry -o storybook-static && node tools/font-notices.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "verify:palette": "node tools/verify-palette.mjs",
+    "verify:i18n": "node tools/verify-i18n.mjs",
+    "catalog": "node tools/catalog.mjs",
+    "check": "pnpm check:static && pnpm test && pnpm test:rules",
+    "review": "node tools/review.mjs",
+    "prepack": "pnpm build",
+    "prepublishOnly": "node tools/release-guard.mjs",
+    "package:smoke": "node tools/package-smoke.mjs",
+    "test:browser": "node tools/browser-regressions.mjs",
+    "test:calendar": "node tools/calendar-review.mjs",
+    "review:responsive": "node tools/responsive-review.mjs",
+    "test:visual": "playwright test -c tools/visual/playwright.config.ts",
+    "release:verify": "node tools/release-source.mjs",
+    "repo:configure": "node tools/configure-repository.mjs",
+    "test:rules": "node tools/lint-rules.test.mjs && node tools/imports.test.mjs && node tools/review-risk.test.mjs && node --test tools/verify-review-feedback.test.mjs && node --test tools/architecture.test.mjs && node tools/stylex-compat.test.mjs && node --test tools/pre-commit.test.mjs && node --test tools/codex-review.test.mjs && node --test tools/public-artifacts.test.mjs && node --test tools/security-dependencies.test.mjs && node --test tools/prepare-bootstrap.test.mjs",
+    "verify:imports": "node tools/verify-imports.mjs",
+    "verify:rules": "node tools/verify-project-rules.mjs",
+    "generate": "pnpm tokens && pnpm catalog",
+    "prepare": "node tools/install-hooks.mjs",
+    "check:static": "node tools/build-tokens.mjs --check && pnpm verify:palette && pnpm verify:i18n && pnpm typecheck && pnpm lint && pnpm verify:imports && pnpm verify:docs && pnpm catalog --check",
+    "verify:storybook": "node tools/font-notices.mjs --check",
+    "verify:docs": "node tools/verify-doc-links.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@internationalized/date": "^3.12.4",
+    "@internationalized/number": "^3.6.9",
+    "@stylexjs/stylex": "^0.19.1",
+    "lucide-react": "^0.577.0",
+    "react-aria-components": "^1.22.1"
+  },
+  "peerDependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@ant-design/colors": "^8.0.1",
+    "@axe-core/playwright": "4.14.0",
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "1.64.1",
+    "@storybook/addon-a11y": "10.6.4",
+    "@storybook/addon-docs": "10.6.4",
+    "@storybook/react-vite": "10.6.4",
+    "@stylexjs/eslint-plugin": "^0.19.1",
+    "@stylexjs/unplugin": "^0.19.1",
+    "@types/node": "^24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "culori": "4.0.2",
+    "eslint": "^9.39.5",
+    "eslint-import-resolver-typescript": "^4.4.5",
+    "eslint-plugin-boundaries": "^7.4.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "husky": "9.1.7",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "storybook": "10.6.4",
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.72.1",
+    "vite": "8.3.5",
+    "vitest": "^5.0.5"
+  },
+  "author": "Dev-Addict",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24",
+      "onFail": "download"
+    }
+  }
+}

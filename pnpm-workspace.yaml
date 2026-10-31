@@ -1,0 +1,11 @@
+minimumReleaseAge: 4320
+allowBuilds:
+  esbuild: true
+  unrs-resolver: false
+
+# Patched development matchers; the compatibility patch retains legacy callable/default exports.
+overrides:
+  minimatch: 11.0.2
+  glob: 14.0.2
+patchedDependencies:
+  minimatch@11.0.2: patches/minimatch@11.0.2.patch

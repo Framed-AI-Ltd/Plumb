@@ -1,0 +1,13 @@
+import { Markdown, Meta } from "@storybook/addon-docs/blocks";
+import guide from "../../docs/LAYOUTS.md?raw";
+import { TemplateGallery } from "./Gallery";
+
+<Meta title="Layouts/Guide" />
+
+# Page templates
+
+Start every new screen from the closest template. Each opens in Storybook, where the toolbar switches theme and the viewport switches to phone width.
+
+<TemplateGallery />
+
+<Markdown>{guide}</Markdown>

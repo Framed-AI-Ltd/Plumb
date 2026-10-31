@@ -1,0 +1,16 @@
+name: Documentation
+description: Something in the docs or Storybook is missing, wrong, or unclear.
+labels: [docs]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Page or story
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's missing or wrong?
+    validations:
+      required: true

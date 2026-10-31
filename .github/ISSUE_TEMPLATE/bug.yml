@@ -1,0 +1,49 @@
+name: Bug report
+description: Something in a Plumb component doesn't work, looks wrong, or isn't accessible.
+labels: [bug]
+body:
+  - type: input
+    id: component
+    attributes:
+      label: Component
+      placeholder: e.g. LineItemGrid
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+      description: Include the story link, or a minimal code example.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Framed → Estimate grid
+        2. Press Delete on a quantity cell
+        3. …
+  - type: dropdown
+    id: area
+    attributes:
+      label: Kind of problem
+      multiple: true
+      options:
+        - Behaviour or keyboard
+        - Screen reader or other accessibility
+        - Visual (light or dark)
+        - Money, totals, or a truth rule (unknowns, private data, drafts)
+        - Translation or locale
+        - Types or API
+  - type: input
+    id: env
+    attributes:
+      label: Version, browser, and assistive technology
+      placeholder: "@framed/plumb 0.0.1 · Firefox 140 · NVDA 2026.1"
+  - type: checkboxes
+    id: private
+    attributes:
+      label: Private data
+      options:
+        - label: This could expose contractor-only data to a customer. (If so, report it privately instead; see SECURITY.md.)

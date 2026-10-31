@@ -1,0 +1,4 @@
+/* React Aria creates calendar-grid table cells without className slots.
+   All authored element recipes are compiled with StyleX; this bridge styles only those vendor cells. */
+.plumb-calendar-grid th { font: var(--text-caption); font-weight: 500; color: var(--text-secondary); padding-block-end: var(--space-3); }
+.plumb-calendar-grid td { padding: var(--space-1) 0; }

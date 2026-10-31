@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, "release/**", "hotfix/**"]
+  pull_request:
+  merge_group:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          package-manager-cache: false
+          node-version-file: .nvmrc
+      - run: pnpm install --frozen-lockfile
+      - name: Tokens, contrast, palette, i18n, types, lint, tests, catalogue
+        run: pnpm check
+      - name: Generated files are committed
+        run: git diff --exit-code -- src/styles/tokens.css src/lib/theme/tokens.stylex.ts docs/PALETTE.md
+      - name: Review feedback declaration
+        if: github.event_name == 'pull_request'
+        run: node tools/verify-review-feedback.mjs "$GITHUB_EVENT_PATH"
+      - name: Review risk classifier
+        run: node --test tools/review-risk.test.mjs
+      - name: Packed package consumer smoke
+        run: pnpm package:smoke
+
+  accessibility:
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          package-manager-cache: false
+          node-version-file: .nvmrc
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm build:storybook
+      - name: Interaction regressions
+        run: |
+          pnpm test:browser
+          pnpm test:calendar
+      - name: Capture responsive visual evidence
+        run: pnpm test:visual
+      - name: axe on every story (light and dark)
+        run: |
+          python3 -m http.server 6007 --directory storybook-static --bind 127.0.0.1 &
+          sleep 2
+          pnpm review --url http://127.0.0.1:6007
+          pnpm review:responsive --url http://127.0.0.1:6007
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: review
+          path: |
+            review/
+            review-interactions/
+            review-calendars/
+            review-responsive/
+            test-results/
+            playwright-report/
+          retention-days: 14

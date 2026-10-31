@@ -1,0 +1,11 @@
+* text=auto eol=lf
+*.png binary
+# Generated files: collapsed in diffs.
+src/styles/tokens.css linguist-generated=true
+docs/PALETTE.md linguist-generated=true
+docs/COMPONENTS.md linguist-generated=true
+docs/catalog.json linguist-generated=true
+pnpm-lock.yaml linguist-generated=true
+
+# Preserve upstream licence notices byte-for-byte, including their whitespace.
+licenses/*.txt -whitespace
