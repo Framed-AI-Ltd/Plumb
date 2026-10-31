@@ -22,6 +22,9 @@ function Fixture() {
       <div>Navigation fixture</div>
       <Card><TextField label="Company name" /><Button variant="primary" icon={<Search />}>Save fixture</Button></Card>
       <ToggleButton data-testid="toggle-default">Pin fixture</ToggleButton>
+      {(['primary', 'secondary', 'soft', 'ghost', 'danger'] as const).map(variant =>
+        <Button key={variant} variant={variant} isDisabled data-testid={`disabled-${variant}`}>Disabled {variant}</Button>
+      )}
       <FloorPlan aria-label="Fixture plan" rooms={[{ id: 'kitchen', name: 'Kitchen', polygon: [[0, 0], [4, 0], [4, 4], [0, 4]], area: 16 }]} pins={[{ id: 'dishwasher', roomId: 'kitchen', label: 'Dishwasher', at: [1, 1] }]} onPinAction={() => {}} />
     </Grid>
     {nested && <ThemeProvider theme={inner}><div data-testid="inner"><DatePicker label="Nested site visit" defaultValue={parseDate('2026-11-12')} /></div></ThemeProvider>}

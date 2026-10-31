@@ -18,7 +18,7 @@ export function prepareBootstrap(archive, output) {
     const directory = join(temporary, 'package');
     const path = join(directory, 'package.json');
     const pkg = JSON.parse(readFileSync(path, 'utf8'));
-    assert.equal(pkg.name, '@framed/plumb');
+    assert.equal(pkg.name, '@framed-ai/plumb');
     assert.match(pkg.version, /^\d+\.\d+\.\d+$/);
     const version = pkg.version;
     pkg.version += '-bootstrap.0';
@@ -28,12 +28,12 @@ export function prepareBootstrap(archive, output) {
     const readme = join(directory, 'README.md');
     writeFileSync(readme, `# Bootstrap prerelease\n\nThis archive establishes npm trusted publishing before the ${version} release. Install the stable release when available.\n\n` + readFileSync(readme, 'utf8'));
     mkdirSync(output, { recursive: true });
-    const filename = join(output, `framed-plumb-${pkg.version}.tgz`);
+    const filename = join(output, `${pkg.name.slice(1).replace('/', '-')}-${pkg.version}.tgz`);
     execFileSync('tar', ['-czf', filename, '-C', temporary, 'package']);
     return filename;
   } finally { rmSync(temporary, { recursive: true, force: true }); }
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  assert(process.argv[2], 'Usage: node tools/prepare-bootstrap.mjs release/framed-plumb-VERSION.tgz');
+  assert(process.argv[2], 'Usage: node tools/prepare-bootstrap.mjs release/framed-ai-plumb-VERSION.tgz');
   console.log(prepareBootstrap(process.argv[2], 'release/bootstrap'));
 }

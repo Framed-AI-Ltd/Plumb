@@ -1,5 +1,5 @@
 {
-  "package": "@framed/plumb",
+  "package": "@framed-ai/plumb",
   "items": [
     {
       "name": "ApprovalRequest",
