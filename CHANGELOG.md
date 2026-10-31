@@ -4,6 +4,11 @@ All notable changes to `@framed-ai/plumb` follow [Semantic Versioning](https://s
 
 ## [Unreleased]
 
+### Changed
+
+- Align Storybook core, renderer and addons at 10.6.5; adopt TypeScript 6.0.3 and Lucide React 1.61.0 while keeping Node 24 runtime typings.
+- Update pinned GitHub Actions for checkout, pnpm setup, dependency review, Pages artifact upload and workflow security without relaxing permissions or checkout safety.
+
 ### Fixed
 
 - Allow protected-main retries to rebuild existing release tags without moving them, while retaining npm environment approval and token-free publishing.
