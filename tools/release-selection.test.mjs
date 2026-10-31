@@ -47,7 +47,9 @@ test('normal tag publication still requires current main and rejects stale or mi
 
 test('retry rejects unmerged tags and mismatched package identities or versions', () => fixture(({ git, root, main, tagCommit, pkg }) => {
   git('checkout', '-qb', 'unmerged', tagCommit);
-  writeFileSync(join(root, 'README.md'), 'Unmerged source'); git('add', '.'); git('commit', '-qm', 'Unmerged'); git('tag', 'v0.0.2');
+  writeFileSync(join(root, 'README.md'), 'Unmerged source');
+  writeFileSync(join(root, 'package.json'), JSON.stringify({ ...pkg, version: '0.0.2' }));
+  git('add', '.'); git('commit', '-qm', 'Unmerged'); git('tag', 'v0.0.2');
   assert.throws(() => selectRelease(manual(main), { inputs: { release_tag: 'v0.0.2' } }, git));
   git('checkout', '-q', 'main'); git('tag', 'v9.9.9');
   assert.throws(() => selectRelease(manual(main), { inputs: { release_tag: 'v9.9.9' } }, git));
