@@ -1,6 +1,6 @@
 # Working in Plumb
 
-Plumb is Framed's contractor-first React design system, published as `@framed/plumb`.
+Plumb is Framed's contractor-first React design system, published as `@framed-ai/plumb`.
 Shared skills live in `.agents/skills`; `.claude` is a relative symlink to `.agents`. Read [CONTRIBUTING.md](CONTRIBUTING.md) and the relevant [procedure](docs/agents/workflow.md).
 
 - Discover APIs in `src/index.ts` and `docs/catalog.json`; library internals import shared lib modules or feature facades; document new APIs and named stories, then `pnpm catalog`.

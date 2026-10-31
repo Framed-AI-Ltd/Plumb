@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
 const pkg = JSON.parse(await readFile('package.json', 'utf8'));
-assert.equal(pkg.name, '@framed/plumb');
+assert.equal(pkg.name, '@framed-ai/plumb');
 assert.match(pkg.version, /^\d+\.\d+\.\d+$/);
 assert.equal(process.env.GITHUB_REPOSITORY, 'Framed-AI-Ltd/Plumb');
 assert.equal(process.env.GITHUB_REF, `refs/tags/v${pkg.version}`);

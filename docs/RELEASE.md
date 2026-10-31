@@ -1,4 +1,4 @@
-# Releasing @framed/plumb
+# Releasing @framed-ai/plumb
 
 Use Node 24 and the pnpm version in `package.json`. Gitflow uses `main` for released source, `develop` for integration and `release/<version>` for stabilization. Feature branches start from `develop`; hotfixes start from `main`. Finish normal releases through reviewed PRs and the merge queue, then backmerge `main` into `develop`.
 
@@ -17,17 +17,17 @@ The initial local Gitflow branches and signed `v0.0.1` tag are prepared before a
    git push -u origin release/0.0.1
    ```
 
-3. As an organization administrator, run `pnpm repo:configure --apply` and inspect `review-setup/github-readback.json`. This activates the documented repository protections, security settings, npm approval environment and Pages configuration. If the first Pages attempt ran before Pages was configured, rerun it afterwards. Configure another eligible code owner before relying on owner-authored PRs: GitHub does not allow authors to approve their own PRs.
-4. Add the GitHub Actions secret `OPENAI_API_KEY`. `OPENAI_REVIEW_MODEL` is optional. Validate the member-only automatic review and `/codex-review` manual path with a disposable PR. CI's non-AI gates must be green.
-5. If `@framed/plumb` does not yet exist on npm, establish the package before configuring its trusted publisher. The prepared bootstrap archive is a distinct prerelease, so it does not consume `0.0.1`. Use an npm account authorized for the `framed` organization in a trusted temporary release environment (for example, an ephemeral Codespace), keeping publishing credentials off development machines:
+3. As an organization administrator, run `pnpm repo:configure --apply` and inspect `review-setup/github-readback.json`. This activates the documented repository protections, security settings, npm approval environment and Pages configuration. If the first Pages attempt ran before Pages was configured, rerun it afterwards. The approved solo-maintainer policy allows main/develop PRs without external approval; required CI, signed commits, resolved threads and merge queues still apply. Release/hotfix branch review requirements remain in place.
+4. CI's non-AI gates must be green. After the correction is merged to main, run `gh workflow run visual-diff.yml --ref main -f base_ref=main -f head_ref=main` and inspect the full visual-review artifacts before pushing a release tag. Configure native Codex automatic reviews in your ChatGPT account separately; the API-backed review workflow is disabled on GitHub, so no `OPENAI_API_KEY` is required for release setup.
+5. If `@framed-ai/plumb` does not yet exist on npm, establish the package before configuring its trusted publisher. The prepared bootstrap archive is a distinct prerelease, so it does not consume `0.0.1`. Use an npm account authorized for the `framed-ai` organization in a trusted temporary release environment (for example, an ephemeral Codespace), keeping publishing credentials off development machines:
 
    ```sh
    npm login
-   npm publish release/bootstrap/framed-plumb-0.0.1-bootstrap.0.tgz --access public --tag bootstrap --ignore-scripts
+   npm publish release/bootstrap/framed-ai-plumb-0.0.1-bootstrap.0.tgz --access public --tag bootstrap --ignore-scripts
    npm logout
    ```
 
-   This is a one-time manual account bootstrap. It uses the normal interactive npm/2FA channel; no npm token belongs in the repository or CI. On a fresh checkout, regenerate the two archives with `pnpm pack --pack-destination release`, then `node tools/prepare-bootstrap.mjs release/framed-plumb-0.0.1.tgz`. The helper prepares files locally and runs no publication command. Skip bootstrap if the package already exists.
+   This is a one-time manual account bootstrap. It uses the normal interactive npm/2FA channel; no npm token belongs in the repository or CI. On a fresh checkout, regenerate the two archives with `pnpm pack --pack-destination release`, then `node tools/prepare-bootstrap.mjs release/framed-ai-plumb-0.0.1.tgz`. The helper prepares files locally and runs no publication command. Skip bootstrap if the package already exists.
 
 6. In npm's package settings, add the GitHub Actions trusted publisher with organization **Framed-AI-Ltd**, repository **Plumb**, workflow **publish.yml**, environment **npm**. Allow direct publishing for this connection: the workflow uses `npm publish`, not stage-only publishing. Use exact capitalization. Create it shortly before the first automated publish; an unvalidated publisher configuration currently expires after two days. See [npm's trusted-publisher guide](https://docs.npmjs.com/trusted-publishers/).
 7. After source CI and account setup are ready, push the signed tag and approve the workflow's `npm` environment deployment:
@@ -36,7 +36,7 @@ The initial local Gitflow branches and signed `v0.0.1` tag are prepared before a
    git push origin v0.0.1
    ```
 
-   Check that `@framed/plumb@0.0.1` is public on npm, has provenance, and installs in a clean consumer. The bootstrap prerelease uses the `bootstrap` tag; the stable workflow publication establishes `latest`.
+   Check that `@framed-ai/plumb@0.0.1` is public on npm, has provenance, and installs in a clean consumer. The bootstrap prerelease uses the `bootstrap` tag; the stable workflow publication establishes `latest`.
 8. Optionally create the GitHub Release page after the tag is present, using the prepared notes:
 
    ```sh

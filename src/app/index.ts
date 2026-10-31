@@ -1,4 +1,4 @@
-// Styles ship separately: import "@framed/plumb/styles.css" (and "@framed/plumb/fonts.css") once in your app.
+// Styles ship separately: import "@framed-ai/plumb/styles.css" (and "@framed-ai/plumb/fonts.css") once in your app.
 export * from "../lib/theme";
 export * from "../lib/locale";
 export * from "../lib/layout";
