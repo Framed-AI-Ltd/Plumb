@@ -214,12 +214,24 @@ try {
         document.body.append(probe); const color = getComputedStyle(probe).color; probe.remove(); return color;
       };
       return {
+        disabled: ['primary', 'secondary', 'soft', 'ghost', 'danger'].map(variant => {
+          const style = getComputedStyle(document.querySelector(`[data-testid="disabled-${variant}"]`));
+          const dark = document.documentElement.dataset.plumbTheme === 'dark';
+          const lightColor = { primary: '--on-accent', soft: '--accent-text', danger: '--error-text' }[variant] ?? '--text-disabled';
+          return {
+            variant, color: style.color,
+            expectedColor: resolveColor(dark ? 'color-mix(in srgb, var(--text-tertiary) 55%, var(--bg-layout))' : `var(${lightColor})`),
+          };
+        }),
         toggle: getComputedStyle(document.querySelector('[data-testid="toggle-default"]')).backgroundColor,
         expectedToggle: resolveColor('var(--bg-container)'),
         pin: getComputedStyle([...document.querySelectorAll('button')].find(button => button.textContent === 'Dishwasher')).backgroundColor,
       };
     });
     assert.equal(controlBackgrounds.toggle, controlBackgrounds.expectedToggle, `${outer} unselected toggle retains its semantic background`);
+    for (const state of controlBackgrounds.disabled) {
+      assert.equal(state.color, state.expectedColor, `${outer} disabled ${state.variant} color overrides its variant`);
+    }
     assert.equal(controlBackgrounds.pin, 'rgba(0, 0, 0, 0)', `${outer} text-action button must not use the browser default background`);
     await page.goto(new URL(`tests/browser/theme.html?outer=${outer}&nested=1`, base).href);
     await expect(page.getByTestId("inner")).toBeVisible();

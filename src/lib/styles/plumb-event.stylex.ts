@@ -58,7 +58,8 @@ export const styles = stylex.create({
         "color": {
             "default": tokens.text,
             ":is([data-confirmed])": tokens.accentText,
-            ":is([data-overdue])": tokens.warningText
+            ":is([data-overdue])": tokens.warningText,
+            ":is([data-confirmed][data-overdue])": tokens.accentText
         },
         "fontWeight": 400,
         "fontSize": {

@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { pullRequestParameters } from './repository-policy.mjs';
 const repo = 'Framed-AI-Ltd/Plumb';
 if (!process.argv.includes('--apply')) throw new Error('Read docs/CI-SETUP.md, then pass --apply to configure the public repository');
 function api(method, path, body) {
@@ -29,7 +30,7 @@ for (const branch of branches) {
   const name = `Plumb ${branch} integration`;
   const rules = [
     { type: 'deletion' }, { type: 'non_fast_forward' }, { type: 'required_signatures' },
-    { type: 'pull_request', parameters: { required_approving_review_count: 1, dismiss_stale_reviews_on_push: true, require_code_owner_review: true, require_last_push_approval: true, required_review_thread_resolution: true, allowed_merge_methods: ['merge'] } },
+    { type: 'pull_request', parameters: pullRequestParameters(branch) },
     { type: 'required_status_checks', parameters: { strict_required_status_checks_policy: false, required_status_checks: [{ context: 'check' }, { context: 'accessibility' }, { context: 'workflow-security' }, { context: 'static-rules' }, { context: 'dependency-review' }] } },
   ];
   if (['main', 'develop'].includes(branch)) rules.push({ type: 'merge_queue', parameters: { check_response_timeout_minutes: 60, grouping_strategy: 'ALLGREEN', max_entries_to_build: 5, max_entries_to_merge: 5, merge_method: 'MERGE', min_entries_to_merge: 1, min_entries_to_merge_wait_minutes: 0 } });

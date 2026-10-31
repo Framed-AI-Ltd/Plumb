@@ -10,7 +10,7 @@ The design system for **Framed**, a platform for contractors to turn intake into
 ## Install
 
 ```sh
-pnpm add @framed/plumb
+pnpm add @framed-ai/plumb
 ```
 
 React and React DOM 19.x, version 19.2 or later are peer dependencies. React Aria, Lucide, and the fonts come with the package. If your app also uses `react-aria-components` directly, keep it on a compatible version so both share one copy (contexts like `RouterProvider` only work with one copy).
@@ -18,9 +18,9 @@ React and React DOM 19.x, version 19.2 or later are peer dependencies. React Ari
 ## Use
 
 ```tsx
-import "@framed/plumb/styles.css";
-import "@framed/plumb/fonts.css"; // optional: Plus Jakarta Sans + Inter, self-hosted
-import { Button, LocaleProvider, Money, ThemeProvider, ToastProvider } from "@framed/plumb";
+import "@framed-ai/plumb/styles.css";
+import "@framed-ai/plumb/fonts.css"; // optional: Plus Jakarta Sans + Inter, self-hosted
+import { Button, LocaleProvider, Money, ThemeProvider, ToastProvider } from "@framed-ai/plumb";
 
 export function App() {
   return (
@@ -35,7 +35,7 @@ export function App() {
 ```
 
 - **Theme:** `ThemeProvider` takes `theme` (`light` or `dark`), `density`, `neutral`. It sets data attributes on `<html>`, so portalled overlays match.
-- **Locale:** `LocaleProvider` sets the locale, default currency, and `messages` overrides. Add a language by copying `@framed/plumb/i18n/en.json`, translating it, and passing it as `messages`.
+- **Locale:** `LocaleProvider` sets the locale, default currency, and `messages` overrides. Add a language by copying `@framed-ai/plumb/i18n/en.json`, translating it, and passing it as `messages`.
 - **Icons:** [Lucide](https://lucide.dev) only. See [docs/ICONS.md](docs/ICONS.md).
 
 ## Find a component

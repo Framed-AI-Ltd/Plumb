@@ -83,7 +83,7 @@ export const styles = stylex.create({
             ":is([data-variant=\"soft\"])": tokens.accentText,
             ":is([data-variant=\"ghost\"])": tokens.text,
             ":is([data-variant=\"danger\"])": tokens.errorText,
-            ":is([data-disabled])": tokens.textDisabled,
+            ":is([data-disabled][data-variant=\"secondary\"], [data-disabled][data-variant=\"ghost\"])": tokens.textDisabled,
             ":is([data-plumb-theme=\"dark\"] .plumb-button[data-disabled])": `color-mix(in srgb, ${tokens.textTertiary} 55%, ${tokens.bgLayout})`,
             ":is(.plumb-lightbox-dialog .plumb-button)": tokens.onMedia
         },
@@ -105,7 +105,8 @@ export const styles = stylex.create({
             "default": null,
             ":is([data-icon-only])": tokens.controlH,
             ":is([data-icon-only][data-size=\"sm\"])": tokens.controlHSm,
-            ":is(.plumb-calendar-head .plumb-button)": tokens.space9
+            ":is(.plumb-calendar-head .plumb-button)": tokens.space9,
+            ":is(.plumb-calendar-head .plumb-button[data-icon-only][data-size=\"sm\"])": tokens.controlHSm
         },
         "padding": {
             "default": null,

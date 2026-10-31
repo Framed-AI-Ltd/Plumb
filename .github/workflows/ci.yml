@@ -16,6 +16,10 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    outputs:
+      ui: ${{ steps.impact.outputs.ui }}
+      scope: ${{ steps.impact.outputs.scope }}
+      story_files: ${{ steps.impact.outputs.story_files }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -26,6 +30,9 @@ jobs:
         with:
           package-manager-cache: false
           node-version-file: .nvmrc
+      - id: impact
+        name: Select conservative UI coverage
+        run: node tools/ci-impact.mjs
       - run: pnpm install --frozen-lockfile
       - name: Tokens, contrast, palette, i18n, types, lint, tests, catalogue
         run: pnpm check
@@ -40,8 +47,16 @@ jobs:
         run: pnpm package:smoke
 
   accessibility:
-    runs-on: ubuntu-latest
+    if: needs.check.outputs.ui == 'true'
+    runs-on: ubuntu-24.04
     needs: check
+    timeout-minutes: 30
+    env:
+      CI_UI_SCOPE: ${{ needs.check.outputs.scope }}
+      CI_STORY_FILES: ${{ needs.check.outputs.story_files }}
+      VISUAL_PR: '1'
+      VISUAL_CAPTURE_ONLY: '1'
+      VISUAL_A11Y: '1'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -54,18 +69,16 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm build:storybook
+      - name: Select stories from the built inventory
+        run: node tools/ci-stories.mjs
       - name: Interaction regressions
         run: |
           pnpm test:browser
           pnpm test:calendar
-      - name: Capture responsive visual evidence
+      - name: Required rendering, accessibility and responsive checks with visual evidence
         run: pnpm test:visual
-      - name: axe on every story (light and dark)
-        run: |
-          python3 -m http.server 6007 --directory storybook-static --bind 127.0.0.1 &
-          sleep 2
-          pnpm review --url http://127.0.0.1:6007
-          pnpm review:responsive --url http://127.0.0.1:6007
+      - name: Advisory comparison against approved screenshots
+        run: node tools/visual-diff.mjs tools/visual/snapshots test-results visual-diff --captured-only
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
@@ -75,6 +88,7 @@ jobs:
             review-interactions/
             review-calendars/
             review-responsive/
+            visual-diff/
             test-results/
             playwright-report/
           retention-days: 14

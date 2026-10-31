@@ -5,7 +5,7 @@ description: Compose supported Plumb UI features with accessible states, StyleX 
 
 Read AGENTS and the applicable short feature spec. Search Plumb exports/catalogue before creating components. Keep public APIs compatible; new application code nests app → features → lib, with no upward imports.
 
-In consuming apps, compose `@framed/plumb` primitives. Inside this library, import shared `lib` modules or feature index facades, never the package entry from a lower layer; use React Aria, Lucide outline icons, approved Denim and StyleX semantic tokens. Put EN/FR copy in messages. Preserve unknown amounts, sources, draft acceptance and customer/private boundaries.
+In consuming apps, compose `@framed-ai/plumb` primitives. Inside this library, import shared `lib` modules or feature index facades, never the package entry from a lower layer; use React Aria, Lucide outline icons, approved Denim and StyleX semantic tokens. Put EN/FR copy in messages. Preserve unknown amounts, sources, draft acceptance and customer/private boundaries.
 
 Use existing query hooks for server state. When none exist, keep a caller-owned interface and document the integration gap; do not fabricate services or add a query dependency without the required approved plan. Preserve user input through mutation failure and prevent duplicate submission.
 
