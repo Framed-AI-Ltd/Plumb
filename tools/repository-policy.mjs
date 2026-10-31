@@ -1,6 +1,6 @@
-// Integration branches permit the explicitly approved solo-maintainer workflow.
+// Integration and release branches permit the explicitly approved solo-maintainer workflow.
 export function pullRequestParameters(branch) {
-  const solo = ['main', 'develop'].includes(branch);
+  const solo = ['main', 'develop', 'release/**'].includes(branch) || branch.startsWith('release/');
   return {
     required_approving_review_count: solo ? 0 : 1,
     dismiss_stale_reviews_on_push: true,
