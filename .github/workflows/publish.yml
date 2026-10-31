@@ -2,6 +2,12 @@ name: Publish npm
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing stable tag to retry without moving it
+        required: true
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -9,8 +15,11 @@ concurrency:
   cancel-in-progress: false
 jobs:
   verify:
-    if: github.repository == 'Framed-AI-Ltd/Plumb'
+    if: github.repository == 'Framed-AI-Ltd/Plumb' && (github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: release-source
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -22,8 +31,18 @@ jobs:
           package-manager-cache: false
           node-version: '24'
           registry-url: https://registry.npmjs.org
+      - name: Select protected release source
+        id: source
+        working-directory: .
+        run: node tools/release-selection.mjs
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ steps.source.outputs.commit }}
+          path: release-source
+          persist-credentials: false
       - run: npm install --global npm@11.11.0
-      - run: node tools/release-source.mjs
+      - name: Verify tagged package prerequisites
+        run: node tools/release-guard.mjs
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm package:smoke
@@ -35,7 +54,7 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: release-package
-          path: release/*.tgz
+          path: release-source/release/*.tgz
           if-no-files-found: error
           retention-days: 1
   publish:
@@ -61,7 +80,7 @@ jobs:
       - name: Trusted publisher (no npm token)
         shell: bash
         run: |
-          archives=(release/*.tgz)
+          archives=(./release/*.tgz)
           test "${#archives[@]}" -eq 1
           test -f "${archives[0]}"
           npm publish "${archives[0]}" --ignore-scripts --access public --provenance

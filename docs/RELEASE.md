@@ -49,3 +49,13 @@ The initial local Gitflow branches and signed `v0.0.1` tag are prepared before a
 ## Later releases
 
 Cut `release/<version>` from `develop`, stabilize it through reviewed PRs, update the version and dated changelog, merge to `main`, sign/tag the current main commit and push only with owner authorization. Backmerge to `develop`. npm trusted publishing then handles routine releases without a long-lived npm token or another bootstrap package.
+
+## Retrying an existing release tag
+
+Rerunning an old tag event uses that tag's original workflow. If publication failed because the workflow itself needed a fix, merge the correction to protected main and leave the existing tag unchanged. An authorized maintainer can then run:
+
+```sh
+gh workflow run publish.yml --ref main -f release_tag=v0.0.1
+```
+
+The protected-main controls resolve the tag to an exact commit, require that commit to be in main history and check package/version identity. Verification rebuilds and tests that tagged source without npm publishing credentials. The separate publisher uses only this run's verified archive, with the same npm environment approval and OIDC connection. New tag pushes still require the tag to point at current main. The npm environment permits release tags and the exact main branch; no other branch is allowed. Retry does not move tags or overwrite an already published npm version.

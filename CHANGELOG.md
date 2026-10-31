@@ -4,6 +4,11 @@ All notable changes to `@framed-ai/plumb` follow [Semantic Versioning](https://s
 
 ## [Unreleased]
 
+### Fixed
+
+- Allow protected-main retries to rebuild existing release tags without moving them, while retaining npm environment approval and token-free publishing.
+- Publish verified npm archives with explicit local paths so tarball names cannot be interpreted as GitHub repositories.
+
 ## [0.0.1] - 2026-10-31
 
 ### Added

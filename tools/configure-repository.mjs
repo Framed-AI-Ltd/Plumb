@@ -53,7 +53,9 @@ const tagPrior = existing.find(r => r.name === tagName);
 api(tagPrior ? 'PUT' : 'POST', `${path}/rulesets${tagPrior ? `/${tagPrior.id}` : ''}`, { name: tagName, target: 'tag', enforcement: 'active', bypass_actors: [], conditions: { ref_name: { include: ['refs/tags/v*'], exclude: [] } }, rules: [{ type: 'deletion' }, { type: 'update' }] });
 api('PUT', `${path}/environments/npm`, { reviewers: [{ type: 'User', id: api('GET', 'users/Dev-Addict').id }], prevent_self_review: false, deployment_branch_policy: { protected_branches: false, custom_branch_policies: true } });
 const policies = api('GET', `${path}/environments/npm/deployment-branch-policies`).branch_policies;
-if (!policies.some(p => p.name === 'v*' && p.type === 'tag')) api('POST', `${path}/environments/npm/deployment-branch-policies`, { name: 'v*', type: 'tag' });
+for (const policy of [{ name: 'v*', type: 'tag' }, { name: 'main', type: 'branch' }]) {
+  if (!policies.some(p => p.name === policy.name && p.type === policy.type)) api('POST', `${path}/environments/npm/deployment-branch-policies`, policy);
+}
 const pages = spawnSync('gh', ['api', `${path}/pages`], { encoding: 'utf8' });
 api(pages.status === 0 ? 'PUT' : 'POST', `${path}/pages`, { build_type: 'workflow' });
 const settings = api('GET', path);
