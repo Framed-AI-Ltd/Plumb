@@ -1,5 +1,5 @@
 {
-  "name": "@framed/plumb",
+  "name": "@framed-ai/plumb",
   "version": "0.0.1",
   "description": "Plumb: the Framed design system. Accessible React components (React Aria) for contractor estimating, proposals, and property records.",
   "license": "PolyForm-Noncommercial-1.0.0",
@@ -78,7 +78,7 @@
     "test:visual": "playwright test -c tools/visual/playwright.config.ts",
     "release:verify": "node tools/release-source.mjs",
     "repo:configure": "node tools/configure-repository.mjs",
-    "test:rules": "node tools/lint-rules.test.mjs && node tools/imports.test.mjs && node tools/review-risk.test.mjs && node --test tools/verify-review-feedback.test.mjs && node --test tools/architecture.test.mjs && node tools/stylex-compat.test.mjs && node --test tools/pre-commit.test.mjs && node --test tools/codex-review.test.mjs && node --test tools/public-artifacts.test.mjs && node --test tools/security-dependencies.test.mjs && node --test tools/prepare-bootstrap.test.mjs",
+    "test:rules": "node tools/lint-rules.test.mjs && node tools/imports.test.mjs && node tools/review-risk.test.mjs && node --test tools/verify-review-feedback.test.mjs && node --test tools/architecture.test.mjs && node tools/stylex-compat.test.mjs && node --test tools/pre-commit.test.mjs && node --test tools/codex-review.test.mjs && node --test tools/public-artifacts.test.mjs && node --test tools/security-dependencies.test.mjs && node --test tools/prepare-bootstrap.test.mjs && node --test tools/release-guard.test.mjs && node --test tools/repository-policy.test.mjs && node --test tools/ci-impact.test.mjs && node --test tools/visual-diff.test.mjs",
     "verify:imports": "node tools/verify-imports.mjs",
     "verify:rules": "node tools/verify-project-rules.mjs",
     "generate": "pnpm tokens && pnpm catalog",

@@ -22,6 +22,7 @@ try {
   await mkdir(installed, { recursive: true });
   run("tar", ["-xzf", join(temporary, archives[0]), "-C", installed, "--strip-components=1"]);
   const packedMetadata = JSON.parse(await readFile(join(installed, "package.json"), "utf8"));
+  assert.equal(packedMetadata.name, pkg.name, "packed package must retain its scoped identity");
   assert.equal(packedMetadata.license, pkg.license, "packed license metadata must match the source");
   for (const file of ["LICENSE", "docs/LICENSING.md"]) {
     const sourceText = await readFile(join(root, file), "utf8");
