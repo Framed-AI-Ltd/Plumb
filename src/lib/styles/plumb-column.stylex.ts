@@ -40,7 +40,7 @@ export const styles = stylex.create({
         "paddingTop": {
             "default": null,
             ":is(.plumb-table .plumb-column)": tokens.space4,
-            ":is(.plumb-line-grid .plumb-column)": tokens.space3
+            ":is(.plumb-line-grid .plumb-column[role=\"columnheader\"])": tokens.space3
         },
         "paddingRight": {
             "default": null,

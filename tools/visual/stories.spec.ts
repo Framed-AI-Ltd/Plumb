@@ -21,6 +21,22 @@ test('responsive story rendering and visual evidence', async ({ page, request },
     await page.evaluate(() => document.fonts.ready);
     await expect(page.locator('#storybook-root')).not.toBeEmpty();
     await expect(page.locator('body')).not.toHaveClass(/sb-show-errordisplay|sb-show-nopreview/);
+    if (story.id === 'framed--estimate-grid') {
+      const spacing = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--space-3').trim());
+      await expect(page.locator('.plumb-line-grid [role="columnheader"]').first()).toHaveCSS('padding-top', spacing);
+    }
+    const calendarButtons = page.locator('.plumb-calendar-head .plumb-button[data-icon-only][data-size="sm"]');
+    if (await calendarButtons.count()) {
+      const size = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--control-h-sm').trim());
+      for (const button of await calendarButtons.all()) await expect(button).toHaveCSS('width', size);
+    }
+    for (const event of await page.locator('.plumb-event[data-confirmed][data-overdue]').all()) {
+      const color = await event.evaluate(el => {
+        const probe = document.createElement('span'); probe.style.color = 'var(--accent-text)';
+        el.append(probe); const resolved = getComputedStyle(probe).color; probe.remove(); return resolved;
+      });
+      await expect(event).toHaveCSS('color', color);
+    }
     await page.addStyleTag({ content: '*,*::before,*::after { animation:none!important; transition:none!important; caret-color:transparent!important }' });
     const file = info.outputPath(`${story.id}.png`);
     await page.screenshot({ path: file, fullPage: true });

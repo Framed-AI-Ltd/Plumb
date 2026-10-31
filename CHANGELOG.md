@@ -6,6 +6,9 @@ All notable changes to `@framed-ai/plumb` follow [Semantic Versioning](https://s
 
 ### Fixed
 
+- Make disabled button colors, calendar icon sizing, confirmed overdue event colors and estimate-grid header spacing independent of compiled CSS order, preserving the approved visual baselines.
+- Add Dependabot cooldowns and enable the approved solo-maintainer review policy for main/develop while retaining CI, signed commits and merge queues.
+
 - Correct the npm scope to `@framed-ai/plumb`, including release guards, bootstrap archive names, generated metadata and consumer examples.
 
 ## [0.0.1] - 2026-10-31

@@ -20,4 +20,7 @@ After setup, run a disposable PR through develop's queue and verify the syntheti
 
 Required branch checks are `check`, `accessibility`, `workflow-security`, `static-rules`, and `dependency-review`. Codex review runs automatically for organization-member PRs and on explicit member authorization for other PRs. It remains advisory to merge protection; owners must inspect the reviewed-head report. Outsider PRs retain static CI and human review without an automatic provider review.
 
+The approved solo-maintainer policy requires no external approval on main/develop PRs. Required CI, signed commits, resolved review threads, merge queues, deletion protection and force-push protection remain enforced. Release/hotfix branches retain their approval requirements. `pnpm repo:configure --apply` preserves this policy; regression tests cover its review settings.
+
+
 Release verification and packing run without npm OIDC permission. The environment-gated publisher downloads the same run’s tarball, checks that exactly one archive exists, and publishes with lifecycle scripts disabled. It does not check out or execute project source.
