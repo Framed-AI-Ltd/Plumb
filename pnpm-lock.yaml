@@ -242,7 +242,7 @@ importers:
         version: 4.4.5(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)
       eslint-plugin-boundaries:
         specifier: ^7.4.0
-        version: 7.4.0(@typescript-eslint/parser@8.72.1(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0))(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)
+        version: 7.4.2(@typescript-eslint/parser@8.72.1(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0))(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)
       eslint-plugin-jsx-a11y:
         specifier: ^6.10.2
         version: 6.10.2(eslint@9.39.5(supports-color@7.2.0))
@@ -391,8 +391,16 @@ packages:
     resolution: {integrity: sha512-WCsemW40Cpc6gouC1SrY6PBaZ+oLRlEVY9XBvZBI7il/HyUrb2nJ505wE1MHEFyDZNnrWDEuy4jL50WVHfTTSQ==}
     engines: {node: '>=6.9.0'}
 
-  '@boundaries/elements@3.3.0':
-    resolution: {integrity: sha512-du5tfiKOJBQkN9guCmvfYKMvLIf0WWtToHbupdodxaf0JkA/A8fDop07lrbE48KrTQfE/CBY/kxq19RahhaJFA==}
+  '@boundaries/config@1.0.1':
+    resolution: {integrity: sha512-E4mNbeBF2yQOEaKgo8uoFJN63zfEro01biHLS18CWvQbtIesi9l8lLgvak8ReTfAZZZMIsLW5RspMbSCTeuapQ==}
+    engines: {node: '>=18.18'}
+
+  '@boundaries/elements@3.3.2':
+    resolution: {integrity: sha512-5XMqT2B67g9NgatMy1fZwjc06O9edH3JCeOfiFJKkRgNZUI7BhrqBBNmSDkqXdrYk0JA8Lrkv1fmock7GaQHwg==}
+    engines: {node: '>=18.18'}
+
+  '@boundaries/policies@1.0.1':
+    resolution: {integrity: sha512-YTrpD9h/GEiCpVLWiFjvdclf2rZMz5UIjH2BC7V5+6GFYIOrITkW/yj+lAVnMjAhW7RTSARC2YBOpBcySMnJ7g==}
     engines: {node: '>=18.18'}
 
   '@csstools/css-tokenizer@3.0.4':
@@ -1779,8 +1787,8 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
 
-  eslint-plugin-boundaries@7.4.0:
-    resolution: {integrity: sha512-G5VPMQXKZM6UQkoI10bd71S1/3sUdIaNF+oNOf18yGVGjxpxsa3dRoPh40WqFFuTSvtK9iu5oe6dwZ6+n/438Q==}
+  eslint-plugin-boundaries@7.4.2:
+    resolution: {integrity: sha512-gf0Z+FfkccqyVAmwjWdqWfpvy9y4hrUiXcF4DrC5S6fSjUhpyO/ncnvVbxyeNy0DlxNKaEnrld2+hrNwSSgXMw==}
     engines: {node: '>=18.18'}
     peerDependencies:
       eslint: '>=6.0.0'
@@ -3220,11 +3228,22 @@ snapshots:
       '@babel/helper-string-parser': 7.29.11
       '@babel/helper-validator-identifier': 7.29.7
 
-  '@boundaries/elements@3.3.0':
+  '@boundaries/config@1.0.1':
+    dependencies:
+      '@boundaries/elements': 3.3.2
+      ajv: 6.15.0
+
+  '@boundaries/elements@3.3.2':
     dependencies:
       handlebars: 4.7.10
       is-core-module: 2.17.0
       picomatch: 4.0.7
+
+  '@boundaries/policies@1.0.1':
+    dependencies:
+      '@boundaries/config': 1.0.1
+      '@boundaries/elements': 3.3.2
+      handlebars: 4.7.10
 
   '@csstools/css-tokenizer@3.0.4': {}
 
@@ -4504,14 +4523,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-boundaries@7.4.0(@typescript-eslint/parser@8.72.1(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0))(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0):
+  eslint-plugin-boundaries@7.4.2(@typescript-eslint/parser@8.72.1(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0))(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0):
     dependencies:
-      '@boundaries/elements': 3.3.0
+      '@boundaries/config': 1.0.1
+      '@boundaries/elements': 3.3.2
+      '@boundaries/policies': 1.0.1
       chalk: 4.1.2
       eslint: 9.39.5(supports-color@7.2.0)
       eslint-import-resolver-node: 0.3.9(supports-color@7.2.0)
       eslint-module-utils: 2.14.0(@typescript-eslint/parser@8.72.1(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint-import-resolver-node@0.3.9(supports-color@7.2.0))(eslint-import-resolver-typescript@4.4.5(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0))(eslint@9.39.5(supports-color@7.2.0))(supports-color@7.2.0)
-      handlebars: 4.7.10
     transitivePeerDependencies:
       - '@typescript-eslint/parser'
       - eslint-import-resolver-typescript
